@@ -1,12 +1,215 @@
 <!DOCTYPE html>
 <html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#09090d"><title>VYRO | Streaming</title>
-<style>*{box-sizing:border-box}body{margin:0;background:#09090d;color:#fff;font-family:Arial,sans-serif}header{padding:20px 5%;display:flex;align-items:center;gap:20px;flex-wrap:wrap;background:#14141c;border-bottom:1px solid #292936}.logo{font-size:30px;font-weight:900;color:#a78bfa}nav{display:flex;gap:16px;flex-wrap:wrap}nav a{color:#fff;text-decoration:none}input{padding:12px;border-radius:8px;background:#22222d;color:#fff;border:1px solid #444;flex:1;min-width:180px}.hero{padding:55px 6%;background:linear-gradient(110deg,#40235b,#101019)}.hero h1{font-size:clamp(36px,6vw,58px)}.hero p{color:#d1cddd}button{padding:11px 16px;border:0;border-radius:8px;background:#8b5cf6;color:#fff;cursor:pointer}main{padding:25px 5%}.filters{display:flex;gap:10px;flex-wrap:wrap;margin:20px 0}.filters button{background:#292936}.filters .active{background:#8b5cf6}.catalogo{display:grid;grid-template-columns:repeat(auto-fill,minmax(155px,1fr));gap:18px}.card{background:#191922;border:1px solid #292936;border-radius:10px;overflow:hidden}.card img{width:100%;aspect-ratio:2/3;object-fit:cover;display:block;background:#252035}.info{padding:12px}.info h3{font-size:16px;margin:4px 0 10px}.info p{font-size:13px;color:#bbb;line-height:1.45}.info .sinopsis{min-height:55px}.info button{width:100%}#estado{color:#bbb}footer{padding:25px 5%;color:#999}@media(max-width:500px){header{gap:14px}.logo{width:100%}.catalogo{grid-template-columns:repeat(2,minmax(0,1fr))}}</style></head>
+
+<style>
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:#09070f;color:#f8f7ff;font-family:Arial,sans-serif}
+header{position:sticky;top:0;z-index:10;padding:16px 5%;display:flex;align-items:center;gap:22px;flex-wrap:wrap;background:#100d19f5;backdrop-filter:blur(14px);border-bottom:1px solid #302342}
+.logo{font-size:32px;font-weight:900;letter-spacing:2px;color:#b69aff}
+nav{display:flex;gap:18px;flex-wrap:wrap}
+nav a{color:#eee6ff;text-decoration:none}
+nav a:hover{color:#b69aff}
+input{padding:13px 16px;border-radius:12px;background:#1b1627;color:#fff;border:1px solid #49355f;flex:1;min-width:190px;outline:none}
+input:focus{border-color:#a78bfa;box-shadow:0 0 0 3px #8b5cf633}
+.hero{padding:70px 6%;background:radial-gradient(ellipse at 80% 20%,#613a8a88,transparent 45%),linear-gradient(120deg,#241333,#100d19 75%);border-bottom:1px solid #302342}
+.hero h1{font-size:clamp(38px,7vw,68px);line-height:1.05;margin:16px 0}
+.hero p{color:#d5cbe4;line-height:1.6}
+button{padding:12px 17px;border:1px solid transparent;border-radius:10px;background:linear-gradient(135deg,#a78bfa,#7c3aed);color:white;font-weight:700;cursor:pointer;transition:transform .2s,filter .2s}
+button:hover{filter:brightness(1.12);transform:translateY(-2px)}
+main{padding:30px 5%;max-width:1600px;margin:auto}
+main h2{font-size:28px}
+.filters{display:flex;gap:10px;flex-wrap:wrap;margin:22px 0}
+.filters button{background:#1c1727;border-color:#382747}
+.filters .active{background:#8b5cf6;border-color:#b69aff}
+.catalogo{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:22px}
+.card{background:#15111e;border:1px solid #302342;border-radius:14px;overflow:hidden;min-width:0;transition:transform .22s,border-color .22s,box-shadow .22s}
+.card:hover{transform:translateY(-5px);border-color:#8b5cf6;box-shadow:0 12px 30px #0006}
+.card img{width:100%;aspect-ratio:2/3;object-fit:cover;display:block;background:#252035}
+.info{padding:14px}
+.info h3{font-size:16px;line-height:1.4;margin:4px 0 10px}
+.info p{font-size:13px;color:#c2b9d0;line-height:1.5}
+.info .sinopsis{min-height:58px}
+.info button{width:100%;font-size:13px}
+#estado{color:#c2b9d0;line-height:1.6}
+footer{padding:28px 5%;color:#a49aaf;border-top:1px solid #302342}
+@media(max-width:600px){
+ header{gap:13px}
+ .logo{width:100%}
+ nav{gap:14px}
+ .catalogo{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+ .info{padding:10px}
+ .info h3{font-size:14px}
+ .hero{padding:48px 6%}
+}
+@media(min-width:1200px){
+ .catalogo{grid-template-columns:repeat(auto-fill,minmax(210px,1fr))}
+}
+</style>
+</head>
 <body><header><div class="logo">VYRO</div><nav><a href="#inicio">Inicio</a><a href="#catalogo">Catálogo</a></nav><input id="buscar" type="search" placeholder="Buscar películas, series o anime..." aria-label="Buscar catálogo"></header>
 <section class="hero" id="inicio"><p>BIENVENIDO A VYRO</p><h1>Historias que<br>te atrapan.</h1><p>Películas, series y anime en un solo lugar.</p><button onclick="document.getElementById('catalogo').scrollIntoView({behavior:'smooth'})">Explorar catálogo</button></section>
 <main id="catalogo"><h2>Descubre contenido</h2><div class="filters"><button class="active" data-tipo="Todos">Todo</button><button data-tipo="Película">Películas</button><button data-tipo="Serie">Series</button><button data-tipo="Anime">Anime</button></div><p id="estado" aria-live="polite">Cargando catálogo…</p><div class="catalogo" id="resultados"></div></main>
 <footer>VYRO © 2026 · Catálogo informativo.<p style="font-size:12px;line-height:1.5;max-width:850px">Este producto utiliza la API de TMDB, pero TMDB no lo respalda ni certifica. Los datos y pósteres proceden de The Movie Database (TMDB).</p><a href="https://www.themoviedb.org/" target="_blank" rel="noopener noreferrer" style="color:#a78bfa">The Movie Database (TMDB)</a></footer>
+
 <script>
-const resultados=document.getElementById('resultados'),buscar=document.getElementById('buscar'),estado=document.getElementById('estado');let filtro='Todos',pagina=1,cargando=false,temporizador;const BASE='https://image.tmdb.org/t/p/w500';
-async function cargar(reset=true){if(cargando)return;cargando=true;if(reset)pagina=1;estado.textContent='Cargando películas, series y anime…';if(reset)resultados.replaceChildren();try{const p=new URLSearchParams({tipo:filtro,pagina:String(pagina),buscar:buscar.value.trim()});const r=await fetch('/.netlify/functions/catalogo?'+p);const d=await r.json();if(!r.ok)throw Error(d.error||'No se pudo cargar el catálogo.');const lista=(d.results||[]).map(x=>{let tipo=x.vyro_type||x.media_type||'movie',serie=tipo==='tv'||tipo==='anime',fecha=serie?x.first_air_date:x.release_date;return {nombre:x.title||x.name||'Sin título',tipo:tipo==='anime'?'Anime':serie?'Serie':'Película',anio:fecha?fecha.slice(0,4):'Año desconocido',sinopsis:x.overview||'Sin sinopsis disponible.',poster:x.poster_path?BASE+x.poster_path:'',nota:Number.isFinite(x.vote_average)?x.vote_average.toFixed(1):'—'}});if(reset)resultados.replaceChildren();if(!lista.length&&reset){const p=document.createElement('p');p.textContent='No se encontraron títulos.';resultados.append(p)}lista.forEach(t=>{const c=document.createElement('article');c.className='card';const img=document.createElement('img');img.loading='lazy';img.alt='Póster de '+t.nombre;img.src=t.poster||'data:image/svg+xml;charset=UTF-8,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="300" height="450"><rect width="100%" height="100%" fill="#252035"/><text x="50%" y="50%" fill="#c4b5fd" font-size="30" text-anchor="middle">VYRO</text></svg>');const info=document.createElement('div');info.className='info';const h=document.createElement('h3');h.textContent=t.nombre;const meta=document.createElement('p');meta.textContent=t.tipo+' · '+t.anio;const n=document.createElement('p');n.textContent='★ '+t.nota+' / 10';const s=document.createElement('p');s.className='sinopsis';s.textContent=t.sinopsis.length>155?t.sinopsis.slice(0,152)+'…':t.sinopsis;const b=document.createElement('button');b.textContent='Ver información';b.onclick=()=>alert(t.nombre+'\n\n'+t.sinopsis+'\n\nCatálogo informativo; no incluye reproducción de vídeo.');info.append(h,meta,n,s,b);c.append(img,info);resultados.append(c)});estado.textContent=lista.length?lista.length+' títulos cargados · Página '+pagina:'No hay resultados.';const more=document.createElement('button');more.textContent='Cargar más';more.style.margin='16px';more.onclick=()=>{pagina++;cargar(false)};resultados.append(more)}catch(e){estado.textContent='No se pudo cargar el catálogo.';const p=document.createElement('p');p.style.gridColumn='1/-1';p.textContent=e.message;resultados.append(p)}finally{cargando=false}}
-document.querySelectorAll('.filters button').forEach(b=>b.onclick=()=>{filtro=b.dataset.tipo;document.querySelectorAll('.filters button').forEach(x=>x.classList.toggle('active',x===b));cargar(true)});buscar.addEventListener('input',()=>{clearTimeout(temporizador);temporizador=setTimeout(()=>cargar(true),350)});cargar();
-</script></body></html>
+const resultados = document.getElementById('resultados');
+const buscar = document.getElementById('buscar');
+const estado = document.getElementById('estado');
+const filtros = document.querySelectorAll('.filters button');
+const BASE = 'https://image.tmdb.org/t/p/w500';
+
+let filtro = 'Todos';
+let pagina = 1;
+let cargando = false;
+let temporizador;
+let solicitud = 0;
+let botonMas;
+
+async function cargar(reset = true) {
+  if (cargando) {
+    if (reset) solicitud++;
+    return;
+  }
+
+  const id = ++solicitud;
+  cargando = true;
+
+  if (reset) {
+    pagina = 1;
+    resultados.replaceChildren();
+  }
+
+  if (botonMas) botonMas.remove();
+  estado.textContent = 'Cargando películas, series y anime…';
+
+  try {
+    const params = new URLSearchParams({
+      tipo: filtro,
+      pagina: String(pagina),
+      buscar: buscar.value.trim()
+    });
+
+    const respuesta = await fetch(
+      '/.netlify/functions/catalogo?' + params
+    );
+
+    const datos = await respuesta.json();
+
+    if (!respuesta.ok) {
+      throw new Error(datos.error || 'No se pudo cargar el catálogo.');
+    }
+
+    if (id !== solicitud) return;
+
+    const lista = (datos.results || []).map(x => {
+      const tipo = x.vyro_type || x.media_type || 'movie';
+      const esSerie = tipo === 'tv' || tipo === 'anime';
+      const fecha = esSerie ? x.first_air_date : x.release_date;
+
+      return {
+        nombre: x.title || x.name || 'Sin título',
+        tipo: tipo === 'anime' ? 'Anime' : esSerie ? 'Serie' : 'Película',
+        anio: fecha ? fecha.slice(0, 4) : 'Año desconocido',
+        sinopsis: x.overview || 'Sin sinopsis disponible.',
+        poster: x.poster_path ? BASE + x.poster_path : '',
+        nota: Number.isFinite(x.vote_average)
+          ? x.vote_average.toFixed(1)
+          : '—'
+      };
+    });
+
+    if (!lista.length && reset) {
+      const mensaje = document.createElement('p');
+      mensaje.textContent = 'No se encontraron títulos.';
+      resultados.append(mensaje);
+    }
+
+    lista.forEach(t => {
+      const tarjeta = document.createElement('article');
+      tarjeta.className = 'card';
+
+      const img = document.createElement('img');
+      img.loading = 'lazy';
+      img.alt = 'Póster de ' + t.nombre;
+      img.src = t.poster ||
+        'data:image/svg+xml;charset=UTF-8,' +
+        encodeURIComponent(
+          '<svg xmlns="http://www.w3.org/2000/svg" width="300" height="450"><rect width="100%" height="100%" fill="#252035"/><text x="50%" y="50%" fill="#c4b5fd" font-size="30" text-anchor="middle">VYRO</text></svg>'
+        );
+
+      const info = document.createElement('div');
+      info.className = 'info';
+
+      const titulo = document.createElement('h3');
+      titulo.textContent = t.nombre;
+
+      const meta = document.createElement('p');
+      meta.textContent = t.tipo + ' · ' + t.anio;
+
+      const nota = document.createElement('p');
+      nota.textContent = '★ ' + t.nota + ' / 10';
+
+      const sinopsis = document.createElement('p');
+      sinopsis.className = 'sinopsis';
+      sinopsis.textContent = t.sinopsis.length > 155
+        ? t.sinopsis.slice(0, 152) + '…'
+        : t.sinopsis;
+
+      const boton = document.createElement('button');
+      boton.textContent = 'Ver información';
+      boton.onclick = () => alert(
+        t.nombre + '\n\n' + t.sinopsis +
+        '\n\nCatálogo informativo; no incluye reproducción de vídeo.'
+      );
+
+      info.append(titulo, meta, nota, sinopsis, boton);
+      tarjeta.append(img, info);
+      resultados.append(tarjeta);
+    });
+
+    estado.textContent = lista.length
+      ? lista.length + ' títulos cargados · Página ' + pagina
+      : 'No hay más resultados.';
+
+    if (lista.length) {
+      botonMas = document.createElement('button');
+      botonMas.textContent = 'Cargar más';
+      botonMas.style.margin = '16px';
+      botonMas.onclick = () => {
+        if (cargando) return;
+        pagina++;
+        cargar(false);
+      };
+      resultados.append(botonMas);
+    }
+  } catch (error) {
+    if (id !== solicitud) return;
+    estado.textContent = 'No se pudo cargar el catálogo.';
+    const mensaje = document.createElement('p');
+    mensaje.style.gridColumn = '1/-1';
+    mensaje.textContent = error.message;
+    resultados.append(mensaje);
+  } finally {
+    if (id === solicitud) cargando = false;
+  }
+}
+
+filtros.forEach(boton => {
+  boton.onclick = () => {
+    filtro = boton.dataset.tipo;
+    filtros.forEach(b =>
+      b.classList.toggle('active', b === boton)
+    );
+    cargar(true);
+  };
+});
+
+buscar.addEventListener('input', () => {
+  clearTimeout(temporizador);
+  temporizador = setTimeout(() => cargar(true), 350);
+});
+
+cargar();
+</script>
+</body></html>
