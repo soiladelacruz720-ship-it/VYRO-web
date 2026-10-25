@@ -261,12 +261,16 @@ boton.onclick = () => {
 ver.textContent = 'Dónde verla';
 
 ver.onclick = () => {
-  if (!t.id) return;
+  if (!t.id) {
+    alert('No se encontró el ID de este título.');
+    return;
+  }
+
   const tipo = t.mediaType === 'tv' ? 'tv' : 'movie';
   const url = `https://www.themoviedb.org/${tipo}/${t.id}/watch?locale=DO`;
-  window.open(url, '_blank', 'noopener,noreferrer');
-};
 
+  window.location.href = url;
+};
 contenido.append(tituloModal, cuerpo, ver, cerrar);
   modal.append(contenido);
 
