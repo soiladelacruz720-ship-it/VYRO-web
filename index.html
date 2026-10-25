@@ -257,7 +257,17 @@ boton.onclick = () => {
   cerrar.textContent = 'Cerrar';
   cerrar.onclick = () => modal.remove();
 
-  contenido.append(tituloModal, cuerpo, cerrar);
+ const ver = document.createElement('button');
+ver.textContent = 'Dónde verla';
+
+ver.onclick = () => {
+  if (!t.id) return;
+  const tipo = t.mediaType === 'tv' ? 'tv' : 'movie';
+  const url = `https://www.themoviedb.org/${tipo}/${t.id}/watch?locale=DO`;
+  window.open(url, '_blank', 'noopener,noreferrer');
+};
+
+contenido.append(tituloModal, cuerpo, ver, cerrar);
   modal.append(contenido);
 
   modal.onclick = e => {
