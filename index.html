@@ -1,6 +1,69 @@
 <!DOCTYPE html>
 <html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#09090d"><title>VYRO | Streaming</title>
 
+.modal-vyro {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: rgba(0, 0, 0, .85);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 18px;
+}
+
+.modal-contenido {
+  position: relative;
+  background: #171321;
+  color: #fff;
+  border: 1px solid #7c3aed;
+  border-radius: 18px;
+  padding: 22px;
+  width: 100%;
+  max-width: 650px;
+  max-height: 85vh;
+  overflow-y: auto;
+  box-shadow: 0 0 35px #6d28d955;
+}
+
+.modal-cuerpo {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+}
+
+.modal-cuerpo img {
+  width: 180px;
+  max-width: 42%;
+  border-radius: 12px;
+  object-fit: cover;
+}
+
+.modal-contenido h2 {
+  color: #c4b5fd;
+  margin-top: 0;
+}
+
+.modal-cerrar {
+  display: block;
+  margin-top: 18px;
+  background: #7c3aed;
+  color: white;
+  border: 0;
+  padding: 11px 20px;
+  border-radius: 9px;
+  cursor: pointer;
+}
+
+@media (max-width: 480px) {
+  .modal-cuerpo {
+    gap: 12px;
+  }
+  .modal-cuerpo img {
+    width: 120px;
+  }
+}
+
 <style>
 *{box-sizing:border-box}
 html{scroll-behavior:smooth}
@@ -156,12 +219,58 @@ async function cargar(reset = true) {
         ? t.sinopsis.slice(0, 152) + '…'
         : t.sinopsis;
 
-      const boton = document.createElement('button');
-      boton.textContent = 'Ver información';
-      boton.onclick = () => alert(
-        t.nombre + '\n\n' + t.sinopsis +
-        '\n\nCatálogo informativo; no incluye reproducción de vídeo.'
-      );
+      
+const boton = document.createElement('button');
+boton.textContent = 'Ver información';
+
+boton.onclick = () => {
+  document.querySelector('.modal-vyro')?.remove();
+
+  const modal = document.createElement('div');
+  modal.className = 'modal-vyro';
+
+  const contenido = document.createElement('div');
+  contenido.className = 'modal-contenido';
+
+  const tituloModal = document.createElement('h2');
+  tituloModal.textContent = t.nombre;
+
+  const cuerpo = document.createElement('div');
+  cuerpo.className = 'modal-cuerpo';
+
+  const poster = document.createElement('img');
+  poster.src = t.poster || img.src;
+  poster.alt = 'Póster de ' + t.nombre;
+
+  const detalles = document.createElement('div');
+
+  const tipoAnio = document.createElement('p');
+  tipoAnio.textContent = t.tipo + ' · ' + t.anio;
+
+  const calificacion = document.createElement('p');
+  calificacion.textContent = '★ ' + t.nota + ' / 10';
+
+  const descripcion = document.createElement('p');
+  descripcion.textContent = t.sinopsis;
+
+  detalles.append(tipoAnio, calificacion, descripcion);
+  cuerpo.append(poster, detalles);
+
+  const cerrar = document.createElement('button');
+  cerrar.className = 'modal-cerrar';
+  cerrar.textContent = 'Cerrar';
+  cerrar.onclick = () => modal.remove();
+
+  contenido.append(tituloModal, cuerpo, cerrar);
+  modal.append(contenido);
+
+  modal.onclick = e => {
+    if (e.target === modal) modal.remove();
+  };
+
+  document.body.append(modal);
+};
+
 
       info.append(titulo, meta, nota, sinopsis, boton);
       tarjeta.append(img, info);
