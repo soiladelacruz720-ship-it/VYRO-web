@@ -159,24 +159,27 @@ async function cargar(reset = true) {
       throw new Error(datos.error || 'No se pudo cargar el catálogo.');
     }
 
-    if (id !== solicitud) return;
+   
+if (id !== solicitud) return;
 
-    const lista = (datos.results || []).map(x => {
-      const tipo = x.vyro_type || x.media_type || 'movie';
-      const esSerie = tipo === 'tv' || tipo === 'anime';
-      const fecha = esSerie ? x.first_air_date : x.release_date;
+const lista = (datos.results || []).map(x => {
+  const tipo = x.vyro_type || x.media_type || 'movie';
+  const esSerie = tipo === 'tv' || tipo === 'anime';
+  const fecha = esSerie ? x.first_air_date : x.release_date;
 
-      return {
-        nombre: x.title || x.name || 'Sin título',
-        tipo: tipo === 'anime' ? 'Anime' : esSerie ? 'Serie' : 'Película',
-        anio: fecha ? fecha.slice(0, 4) : 'Año desconocido',
-        sinopsis: x.overview || 'Sin sinopsis disponible.',
-        poster: x.poster_path ? BASE + x.poster_path : '',
-        nota: Number.isFinite(x.vote_average)
-          ? x.vote_average.toFixed(1)
-          : '—'
-      };
-    });
+  return {
+    id: x.id,
+    mediaType: esSerie ? 'tv' : 'movie',
+    nombre: x.title || x.name || 'Sin título',
+    tipo: tipo === 'anime' ? 'Anime' : esSerie ? 'Serie' : 'Película',
+    anio: fecha ? fecha.slice(0, 4) : 'Año desconocido',
+    sinopsis: x.overview || 'Sin sinopsis disponible.',
+    poster: x.poster_path ? BASE + x.poster_path : '',
+    nota: Number.isFinite(x.vote_average)
+      ? x.vote_average.toFixed(1)
+      : '—'
+  };
+});
 
     if (!lista.length && reset) {
       const mensaje = document.createElement('p');
