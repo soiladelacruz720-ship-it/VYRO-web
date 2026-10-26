@@ -246,19 +246,30 @@ botonVideo.textContent = '▶ Ver video';
 botonVideo.style.marginTop = '8px';
 
 botonVideo.onclick = () => {
+  const reproductorExistente = info.querySelector('video');
+
+  if (reproductorExistente) {
+    reproductorExistente.remove();
+    botonVideo.textContent = '▶ Ver video';
+    botonVideo.disabled = false;
+    return;
+  }
+
   const reproductor = document.createElement('video');
   reproductor.controls = true;
   reproductor.playsInline = true;
+  reproductor.preload = 'metadata';
   reproductor.style.width = '100%';
   reproductor.style.marginTop = '10px';
 
   const fuente = document.createElement('source');
-  fuente.src = 'PEGA_AQUI_LA_URL_DE_TU_VIDEO_AUTORIZADO';
+  fuente.src = 'https://res.cloudinary.com/htnuvtl1/video/upload/v1792957869/Spiderman_tom_hollan.mp4';
   fuente.type = 'video/mp4';
 
   reproductor.appendChild(fuente);
-  tarjeta.appendChild(reproductor);
-  botonVideo.disabled = true;
+  info.appendChild(reproductor);
+
+  botonVideo.textContent = '✖ Cerrar video';
 };
 boton.onclick = () => {
   document.querySelector('.modal-vyro')?.remove();
