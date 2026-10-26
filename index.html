@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#09090d"><title>VYRO | Streaming</title>
+<style>
 
 
 
@@ -18,7 +19,7 @@
   background: #000;
   border-radius: 12px;
 }
-<style>
+
 *{box-sizing:border-box}
 html{scroll-behavior:smooth}
 body{margin:0;background:#09070f;color:#f8f7ff;font-family:Arial,sans-serif}
@@ -123,13 +124,7 @@ footer{padding:28px 5%;color:#a49aaf;border-top:1px solid #302342}
 <body><header><div class="logo">VYRO</div><nav><a href="#inicio">Inicio</a><a href="#catalogo">Catálogo</a><a href="/admin.html">Administrador</a></nav><input id="buscar" type="search" placeholder="Buscar películas, series o anime..." aria-label="Buscar catálogo"></header>
 
 <section class="hero" id="inicio"><p>BIENVENIDO A VYRO</p><h1>Historias que<br>te atrapan.</h1><p>Películas, series y anime en un solo lugar.</p><button onclick="document.getElementById('catalogo').scrollIntoView({behavior:'smooth'})">Explorar catálogo</button></section>
-<section class="reproductor-vyro" id="mis-videos">
-  <h2>Mis videos</h2>
-  <video controls playsinline preload="metadata" style="width:100%;max-height:550px;background:#000;border-radius:12px">
-    <source src="TU_URL_DE_VIDEO" type="video/mp4">
-    Tu navegador no puede reproducir este video.
-  </video>
-</section>
+
  <main id="catalogo"><h2>Descubre contenido</h2><div class="filters"><button class="active" data-tipo="Todos">Todo</button><button data-tipo="Película">Películas</button><button data-tipo="Serie">Series</button><button data-tipo="Anime">Anime</button></div><p id="estado" aria-live="polite">Cargando catálogo…</p><div class="catalogo" id="resultados"></div></main>
 <footer>VYRO © 2026 · Catálogo informativo.<p style="font-size:12px;line-height:1.5;max-width:850px">Este producto utiliza la API de TMDB, pero TMDB no lo respalda ni certifica. Los datos y pósteres proceden de The Movie Database (TMDB).</p><a href="https://www.themoviedb.org/" target="_blank" rel="noopener noreferrer" style="color:#a78bfa">The Movie Database (TMDB)</a></footer>
 
@@ -197,7 +192,8 @@ const lista = (datos.results || []).map(x => {
     anio: fecha ? fecha.slice(0, 4) : 'Año desconocido',
     sinopsis: x.overview || 'Sin sinopsis disponible.',
     poster: x.poster_path ? BASE + x.poster_path : '',
-    nota: Number.isFinite(x.vote_average)
+videoUrl: x.vyro_watch_url || '',
+nota: Number.isFinite(x.vote_average)
       ? x.vote_average.toFixed(1)
       : '—'
   };
@@ -265,7 +261,12 @@ botonVideo.onclick = () => {
   reproductor.style.marginTop = '10px';
 
   const fuente = document.createElement('source');
-  fuente.src = 'https://res.cloudinary.com/htnuvtl1/video/upload/v1792957869/Spiderman_tom_hollan.mp4';
+  if (!t.videoUrl) {
+  alert('Este título todavía no tiene un vídeo asignado.');
+  return;
+}
+
+fuente.src = t.videoUrl;
   fuente.type = 'video/mp4';
 
   reproductor.appendChild(fuente);
