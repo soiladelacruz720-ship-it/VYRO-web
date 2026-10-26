@@ -1,5 +1,5 @@
 const crypto = require('crypto');
-const { getStore } = require('@netlify/blobs');
+const { getStore, connectLambda } = require('@netlify/blobs');
 const COOKIE = 'vyro_admin_session';
 const store = () => getStore('vyro-admin');
 function response(statusCode, data, extra={}) {
@@ -17,6 +17,7 @@ function valid(event) {
 }
 const cookieOptions = 'Path=/; HttpOnly; Secure; SameSite=Strict; Max-Age=28800';
 exports.handler = async (event) => {
+  connectLambda(event);
   const method=event.httpMethod;
   const path=event.path||'';
   const secret=process.env.ADMIN_PASSWORD, sessionSecret=process.env.ADMIN_SESSION_SECRET;
