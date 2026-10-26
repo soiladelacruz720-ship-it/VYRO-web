@@ -241,7 +241,25 @@ const lista = (datos.results || []).map(x => {
       
 const boton = document.createElement('button');
 boton.textContent = 'Ver información';
+const botonVideo = document.createElement('button');
+botonVideo.textContent = '▶ Ver video';
+botonVideo.style.marginTop = '8px';
 
+botonVideo.onclick = () => {
+  const reproductor = document.createElement('video');
+  reproductor.controls = true;
+  reproductor.playsInline = true;
+  reproductor.style.width = '100%';
+  reproductor.style.marginTop = '10px';
+
+  const fuente = document.createElement('source');
+  fuente.src = 'PEGA_AQUI_LA_URL_DE_TU_VIDEO_AUTORIZADO';
+  fuente.type = 'video/mp4';
+
+  reproductor.appendChild(fuente);
+  tarjeta.appendChild(reproductor);
+  botonVideo.disabled = true;
+};
 boton.onclick = () => {
   document.querySelector('.modal-vyro')?.remove();
 
