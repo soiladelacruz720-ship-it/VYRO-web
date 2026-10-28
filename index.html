@@ -410,8 +410,10 @@ async function cargar(reset = true) {
       buscar: buscar.value.trim()
     });
 
-   const respuesta = await fetch(
-  `https://vyro-streaming.youwinck.workers.dev/api/trailer/${tipo}/${t.id}`
+  const tipoTrailer = t.mediaType === 'tv' ? 'tv' : 'movie';
+
+const respuesta = await fetch(
+  `https://vyro-streaming.youwinck.workers.dev/api/trailer/${tipoTrailer}/${t.id}`
 );
 
     const datos = await respuesta.json();
