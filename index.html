@@ -228,7 +228,7 @@ footer{padding:28px 5%;color:#a49aaf;border-top:1px solid #302342}
 </script>
 <header><div class="logo">VYRO</div><nav><a href="#inicio">Inicio</a><a href="#catalogo">Catálogo</a><a href="/admin.html">Administrador</a></nav><input id="buscar" type="search" placeholder="Buscar películas, series o anime..." aria-label="Buscar catálogo"></header>
 
-<section class="hero" id="inicio"><p>BIENVENIDO A VYRO</p><h1>Historias que<br>te atrapan.</h1><p>Películas, series y anime en un solo lugar.</p><button onclick="document.getElementById('catalogo').scrollIntoView({behavior:'smooth'})">Explorar catálogo</button></section>
+<section class="hero" id="inicio"><p>BIENVENIDO A VYRO</p><h1 id="tituloHero">VYRO</h1><p>Películas, series y anime en un solo lugar.</p><button onclick="document.getElementById('catalogo').scrollIntoView({behavior:'smooth'})">Explorar catálogo</button></section>
 
  <main id="catalogo"><h2>Descubre contenido</h2><div class="filters"><button class="active" data-tipo="Todos">Todo</button><button data-tipo="Película">Películas</button><button data-tipo="Serie">Series</button><button data-tipo="Anime">Anime</button></div><p id="estado" aria-live="polite">Cargando catálogo…</p><div class="catalogo" id="resultados"></div></main>
 <footer>VYRO © 2026 · Catálogo informativo.<p style="font-size:12px;line-height:1.5;max-width:850px">Este producto utiliza la API de TMDB, pero TMDB no lo respalda ni certifica. Los datos y pósteres proceden de The Movie Database (TMDB).</p><a href="https://www.themoviedb.org/" target="_blank" rel="noopener noreferrer" style="color:#a78bfa">The Movie Database (TMDB)</a></footer>
@@ -247,10 +247,14 @@ let indiceFondoHero = 0;
 function cambiarFondoHero() {
   if (!fondosHero.length || !hero) return;
 
+  const pelicula = fondosHero[indiceFondoHero];
+
   hero.style.backgroundImage =
     `linear-gradient(90deg, #09070f 0%, #09070fbb 40%, #09070f30 100%),
      linear-gradient(0deg, #09070f 0%, transparent 60%),
-     url("${fondosHero[indiceFondoHero]}")`;
+     url("${pelicula.fondo}")`;
+
+  document.getElementById('tituloHero').textContent = pelicula.nombre;
 
   indiceFondoHero = (indiceFondoHero + 1) % fondosHero.length;
 }
@@ -292,20 +296,29 @@ async function cargar(reset = true) {
 );
 
     const datos = await respuesta.json();
-if (respuesta.ok && datos.results?.length) {
+
+if (!respuesta.ok) {
+  throw new Error(datos.error || 'No se pudo cargar el catálogo.');
+}
+
+if (datos.results?.length) {
   const nuevasImagenes = datos.results
     .filter(p => p.backdrop_path)
-    .map(p => FONDO_BASE + p.backdrop_path);
+    .map(p => ({
+      fondo: FONDO_BASE + p.backdrop_path,
+      nombre: p.title || p.name || 'Película destacada'
+    }));
 
   if (nuevasImagenes.length) {
-    fondosHero = [...new Set([...fondosHero, ...nuevasImagenes])];
+    fondosHero = [
+      ...new Map(
+        [...fondosHero, ...nuevasImagenes].map(p => [p.fondo, p])
+      ).values()
+    ];
+
     cambiarFondoHero();
   }
 }
-    if (!respuesta.ok) {
-      throw new Error(datos.error || 'No se pudo cargar el catálogo.');
-    }
-
    
 if (id !== solicitud) return;
 
