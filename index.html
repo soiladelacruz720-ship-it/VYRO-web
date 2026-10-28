@@ -170,9 +170,9 @@ async function cargar(reset = true) {
       buscar: buscar.value.trim()
     });
 
-    const respuesta = await fetch(
-      '/api/catalogo?' + params
-    );
+   const respuesta = await fetch(
+  '/api/catalogo?' + params
+);
 
     const datos = await respuesta.json();
 
