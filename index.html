@@ -411,7 +411,7 @@ async function cargar(reset = true) {
     });
 
    const respuesta = await fetch(
-  '/api/catalogo?' + params
+  `https://vyro-streaming.youwinck.workers.dev/api/trailer/${tipo}/${t.id}`
 );
 
     const datos = await respuesta.json();
