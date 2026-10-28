@@ -520,9 +520,8 @@ nota: Number.isFinite(x.vote_average)
 
     if (!iframeTrailer) {
       iframeTrailer = document.createElement('iframe');
-      iframeTrailer.src =
-        `https://www.youtube-nocookie.com/embed/${encodeURIComponent(trailerKey)}?autoplay=1&mute=1&controls=0&playsinline=1&rel=0`;
-
+    iframeTrailer.src =
+  `https://www.youtube-nocookie.com/embed/${encodeURIComponent(trailerKey)}?autoplay=1&mute=0&controls=1&playsinline=1&rel=0`;
       iframeTrailer.title = 'Tráiler de ' + t.nombre;
      iframeTrailer.allow =
   'autoplay; encrypted-media; picture-in-picture';
