@@ -413,10 +413,10 @@ async function cargar(reset = true) {
   const tipoTrailer = t.mediaType === 'tv' ? 'tv' : 'movie';
 
 const respuesta = await fetch(
-  `https://vyro-streaming.youwinck.workers.dev/api/trailer/${tipoTrailer}/${t.id}`
+  `https://vyro-streaming.youwinck.workers.dev/api/catalogo?${params}`
 );
 
-    const datos = await respuesta.json();
+const datos = await respuesta.json();
 
 if (!respuesta.ok) {
   throw new Error(datos.error || 'No se pudo cargar el catálogo.');
