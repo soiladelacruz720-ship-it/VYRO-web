@@ -1,0 +1,5 @@
+
+User-agent: *
+Allow: /
+
+Sitemap: https://vyro-web-a2u.pages.dev/sitemap.xml
