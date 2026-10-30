@@ -642,39 +642,66 @@ iframeTrailer.setAttribute('allowfullscreen', '');
     detalles.append(tipoAnio, calificacion, descripcion);
     cuerpo.append(poster, detalles);
 
-    const ver = document.createElement('button');
-    ver.textContent = 'Dónde verla';
+    
+const ver = document.createElement('button');
+ver.textContent = 'Dónde verla';
 
-   ver.onclick = async () => {
-      if (!t.id) {
-        alert('No se encontró el ID de este título.');
-        return;
-      }
+ver.onclick = async () => {
+  if (!t.id) {
+    alert('No se encontró el ID de este título.');
+    return;
+  }
 
-      const tipo = t.mediaType === 'tv' ? 'tv' : 'movie';
+  const tipo = t.mediaType === 'tv' ? 'tv' : 'movie';
 
-const respuesta = await fetch(
-  `https://vyro-streaming.youwinck.workers.dev/api/trailer/${tipo}/${t.id}`
-);
-    const cerrar = document.createElement('button');
-    cerrar.className = 'modal-cerrar';
-    cerrar.textContent = 'Cerrar';
-    cerrar.onclick = () => modal.remove();
+  try {
+    const respuesta = await fetch(
+      `https://vyro-streaming.youwinck.workers.dev/api/trailer/${tipo}/${t.id}`
+    );
 
-    contenido.append(tituloModal, cuerpo, ver, cerrar);
-    modal.append(contenido);
+    if (!respuesta.ok) {
+      throw new Error('No se pudo cargar el tráiler.');
+    }
 
-    modal.onclick = e => {
-      if (e.target === modal) modal.remove();
-    };
+    const datos = await respuesta.json();
 
-    document.body.append(modal);
-  };
+    if (datos.key) {
+      window.open(
+        `https://www.youtube.com/watch?v=${datos.key}`,
+        '_blank',
+        'noopener'
+      );
+    } else {
+      alert('No hay tráiler disponible para este título.');
+    }
+  } catch (error) {
+    console.error(error);
+    alert('No se pudo conectar con el servicio de tráileres.');
+  }
+};
 
-  info.append(titulo, meta, nota, sinopsis, boton, botonVideo);
-  tarjeta.append(posterWrap, info);
-  resultados.append(tarjeta);
+const cerrar = document.createElement('button');
+cerrar.className = 'modal-cerrar';
+cerrar.textContent = 'Cerrar';
+cerrar.onclick = () => modal.remove();
+
+contenido.append(tituloModal, cuerpo, ver, cerrar);
+modal.append(contenido);
+
+modal.onclick = e => {
+  if (e.target === modal) modal.remove();
+};
+
+document.body.append(modal);
+};
+
+};
+
+info.append(titulo, meta, nota, sinopsis, boton, botonVideo);
+tarjeta.append(posterWrap, info);
+resultados.append(tarjeta);
 });
+
     estado.textContent = lista.length
       ? lista.length + ' títulos cargados · Página ' + pagina
       : 'No hay más resultados.';
