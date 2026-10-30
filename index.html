@@ -645,7 +645,7 @@ iframeTrailer.setAttribute('allowfullscreen', '');
     const ver = document.createElement('button');
     ver.textContent = 'Dónde verla';
 
-    ver.onclick = () => {
+   ver.onclick = async () => {
       if (!t.id) {
         alert('No se encontró el ID de este título.');
         return;
