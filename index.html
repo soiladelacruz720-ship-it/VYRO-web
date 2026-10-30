@@ -410,8 +410,8 @@ async function cargar(reset = true) {
       buscar: buscar.value.trim()
     });
 
- const respuesta = await fetch(
-  `https://vyro-streaming.youwinck.workers.dev/api/catalogo?${params}`
+const respuesta = await fetch(
+  `/catalogo?${params}`
 );
 
 const datos = await respuesta.json();
