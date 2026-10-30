@@ -651,10 +651,10 @@ iframeTrailer.setAttribute('allowfullscreen', '');
       }
 
       const tipo = t.mediaType === 'tv' ? 'tv' : 'movie';
-      window.location.href =
-        `https://www.themoviedb.org/${tipo}/${t.id}/watch?locale=DO`;
-    };
 
+const respuesta = await fetch(
+  `https://vyro-streaming.youwinck.workers.dev/api/trailer/${tipo}/${t.id}`
+);
     const cerrar = document.createElement('button');
     cerrar.className = 'modal-cerrar';
     cerrar.textContent = 'Cerrar';
