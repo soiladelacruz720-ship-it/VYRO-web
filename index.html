@@ -503,9 +503,10 @@ nota: Number.isFinite(x.vote_average)
       trailerBuscado = true;
 
       try {
-        const tipo = t.mediaType === 'tv' ? 'tv' : 'movie';
-        const respuesta = await fetch(
-  `https://vyro-streaming.youwinck.workers.dev/api/trailer/${t.media_type}/${t.id}`
+       const tipo = t.mediaType === 'tv' ? 'tv' : 'movie';
+
+const respuesta = await fetch(
+  `https://vyro-streaming.youwinck.workers.dev/api/trailer/${tipo}/${t.id}`
 );
         if (respuesta.ok) {
           const datos = await respuesta.json();
