@@ -255,6 +255,22 @@ footer{padding:28px 5%;color:#a49aaf;border-top:1px solid #302342}
     z-index: 50;
   }
 }
+
+/* Panel Mi cuenta */
+.account-modal{position:fixed;inset:0;z-index:1000000;background:#000c;display:none;align-items:center;justify-content:center;padding:18px}
+.account-modal.open{display:flex}
+.account-box{width:100%;max-width:440px;background:#171321;border:1px solid #7c3aed;border-radius:18px;padding:24px;box-shadow:0 20px 70px #000b;color:#fff}
+.account-box h2{margin:0 0 8px;color:#c4b5fd}
+.account-box p{color:#c8bfd5;line-height:1.5}
+.account-box label{display:block;margin:14px 0 6px;color:#eee}
+.account-box input{width:100%;min-width:0;flex:auto}
+.account-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+.account-actions button{flex:1}
+.account-secondary{background:#302641;border:1px solid #59456e}
+.account-status{min-height:24px;font-size:13px;color:#d8c9ff}
+.account-email{overflow-wrap:anywhere;color:#fff!important}
+.account-close{float:right;background:#302641;padding:7px 11px;margin:0 0 10px 10px}
+
 </style>
 </head>
 <link rel="manifest" href="/manifest.json">
@@ -350,7 +366,7 @@ footer{padding:28px 5%;color:#a49aaf;border-top:1px solid #302342}
   setTimeout(hideLoader, 6000);
 })();
 </script>
-<header><div class="logo">VYRO</div><nav><a href="#inicio">Inicio</a><a href="#catalogo">Catálogo</a><a href="/admin.html">Administrador</a></nav><input id="buscar" type="search" placeholder="Buscar películas, series o anime..." aria-label="Buscar catálogo"></header>
+<header><div class="logo">VYRO</div><nav><a href="#inicio">Inicio</a><a href="#catalogo">Catálogo</a><a href="/admin.html">Administrador</a><a href="#" id="accountLink">Mi cuenta</a></nav><input id="buscar" type="search" placeholder="Buscar películas, series o anime..." aria-label="Buscar catálogo"></header>
 
 <section class="hero" id="inicio"><p>BIENVENIDO A VYRO</p><h1 id="tituloHero">VYRO</h1><p>Películas, series y anime en un solo lugar.</p><button onclick="document.getElementById('catalogo').scrollIntoView({behavior:'smooth'})">Explorar catálogo</button></section>
 
@@ -750,4 +766,139 @@ buscar.addEventListener('input', () => {
 
 cargar();
 </script>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import {
+  getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword,
+  signOut, onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAEFiwgtTqPxhnc8Mm4ER8YTLGqvOz00Nk",
+  authDomain: "vyro-streaming.firebaseapp.com",
+  projectId: "vyro-streaming",
+  appId: "1:178700573094:web:a5285be9464d4bcd261767"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const link = document.getElementById("accountLink");
+
+const modal = document.createElement("div");
+modal.className = "account-modal";
+modal.id = "accountModal";
+modal.innerHTML = `
+  <section class="account-box" role="dialog" aria-modal="true" aria-labelledby="accountTitle">
+    <button class="account-close" id="accountClose" type="button" aria-label="Cerrar">✕</button>
+    <h2 id="accountTitle">Mi cuenta</h2>
+    <p id="accountIntro">Inicia sesión o crea tu cuenta para VYRO.</p>
+    <div id="accountFormArea">
+      <form id="accountForm">
+        <label for="accountEmail">Correo electrónico</label>
+        <input id="accountEmail" type="email" autocomplete="email" required placeholder="tu@correo.com">
+        <label for="accountPassword">Contraseña</label>
+        <input id="accountPassword" type="password" autocomplete="current-password" minlength="6" required placeholder="Mínimo 6 caracteres">
+        <div class="account-actions">
+          <button id="accountSubmit" type="submit">Iniciar sesión</button>
+          <button id="accountMode" class="account-secondary" type="button">Crear cuenta</button>
+        </div>
+      </form>
+    </div>
+    <div id="accountProfile" hidden>
+      <p>Has iniciado sesión en VYRO con:</p>
+      <p class="account-email" id="accountUserEmail"></p>
+      <div class="account-actions">
+        <button id="accountLogout" type="button">Cerrar sesión</button>
+      </div>
+    </div>
+    <p class="account-status" id="accountStatus" role="status" aria-live="polite"></p>
+  </section>`;
+document.body.append(modal);
+
+const $ = id => document.getElementById(id);
+let registerMode = false;
+
+function showStatus(message) { $("accountStatus").textContent = message; }
+function openAccount(event) {
+  event?.preventDefault();
+  modal.classList.add("open");
+  showStatus("");
+}
+function closeAccount() { modal.classList.remove("open"); }
+
+link?.addEventListener("click", openAccount);
+$("accountClose").addEventListener("click", closeAccount);
+modal.addEventListener("click", event => {
+  if (event.target === modal) closeAccount();
+});
+document.addEventListener("keydown", event => {
+  if (event.key === "Escape") closeAccount();
+});
+
+$("accountMode").addEventListener("click", () => {
+  registerMode = !registerMode;
+  $("accountTitle").textContent = registerMode ? "Crear cuenta" : "Mi cuenta";
+  $("accountIntro").textContent = registerMode
+    ? "Regístrate con tu correo electrónico y una contraseña."
+    : "Inicia sesión o crea tu cuenta para VYRO.";
+  $("accountSubmit").textContent = registerMode ? "Registrarme" : "Iniciar sesión";
+  $("accountMode").textContent = registerMode ? "Ya tengo una cuenta" : "Crear cuenta";
+  $("accountPassword").autocomplete = registerMode ? "new-password" : "current-password";
+  showStatus("");
+});
+
+$("accountForm").addEventListener("submit", async event => {
+  event.preventDefault();
+  const email = $("accountEmail").value.trim();
+  const password = $("accountPassword").value;
+  $("accountSubmit").disabled = true;
+  showStatus(registerMode ? "Creando cuenta…" : "Iniciando sesión…");
+  try {
+    if (registerMode) {
+      await createUserWithEmailAndPassword(auth, email, password);
+      showStatus("¡Cuenta creada correctamente!");
+    } else {
+      await signInWithEmailAndPassword(auth, email, password);
+      showStatus("Sesión iniciada correctamente.");
+    }
+  } catch (error) {
+    const messages = {
+      "auth/email-already-in-use": "Ese correo ya tiene una cuenta. Inicia sesión.",
+      "auth/invalid-email": "Escribe un correo electrónico válido.",
+      "auth/weak-password": "La contraseña debe tener al menos 6 caracteres.",
+      "auth/invalid-credential": "Correo o contraseña incorrectos.",
+      "auth/network-request-failed": "No se pudo conectar. Revisa tu internet."
+    };
+    showStatus(messages[error.code] || "No se pudo completar la operación. Inténtalo de nuevo.");
+  } finally {
+    $("accountSubmit").disabled = false;
+  }
+});
+
+$("accountLogout").addEventListener("click", async () => {
+  try {
+    await signOut(auth);
+    showStatus("Has cerrado sesión.");
+  } catch {
+    showStatus("No se pudo cerrar la sesión. Inténtalo de nuevo.");
+  }
+});
+
+onAuthStateChanged(auth, user => {
+  const loggedIn = Boolean(user);
+  $("accountFormArea").hidden = loggedIn;
+  $("accountProfile").hidden = !loggedIn;
+  $("accountUserEmail").textContent = user?.email || "";
+  if (loggedIn) {
+    $("accountTitle").textContent = "Mi cuenta";
+    $("accountIntro").textContent = "Tu sesión está activa.";
+    showStatus("");
+  } else {
+    $("accountTitle").textContent = registerMode ? "Crear cuenta" : "Mi cuenta";
+    $("accountIntro").textContent = "Inicia sesión o crea tu cuenta para VYRO.";
+  }
+});
+</script>
+
 </body></html>
