@@ -259,7 +259,7 @@ footer{padding:28px 5%;color:#a49aaf;border-top:1px solid #302342}
 /* Panel Mi cuenta */
 .account-modal{position:fixed;inset:0;z-index:1000000;background:#000c;display:none;align-items:center;justify-content:center;padding:18px}
 .account-modal.open{display:flex}
-.account-box{width:100%;max-width:440px;background:#171321;border:1px solid #7c3aed;border-radius:18px;padding:24px;box-shadow:0 20px 70px #000b;color:#fff}
+.account-box{width:100%;max-width:680px;background:#171321;border:1px solid #7c3aed;border-radius:18px;padding:24px;box-shadow:0 20px 70px #000b;color:#fff}
 .account-box h2{margin:0 0 8px;color:#c4b5fd}
 .account-box p{color:#c8bfd5;line-height:1.5}
 .account-box label{display:block;margin:14px 0 6px;color:#eee}
@@ -270,7 +270,24 @@ footer{padding:28px 5%;color:#a49aaf;border-top:1px solid #302342}
 .account-status{min-height:24px;font-size:13px;color:#d8c9ff}
 .account-email{overflow-wrap:anywhere;color:#fff!important}
 .account-close{float:right;background:#302641;padding:7px 11px;margin:0 0 10px 10px}
+.avatar-current{display:flex;align-items:center;gap:14px;margin:16px 0;padding:12px;background:#211a2e;border-radius:14px}
+.avatar-current img{width:72px;height:72px;border-radius:50%;object-fit:cover;border:2px solid #a78bfa;background:#302641}
+.avatar-search{display:flex;gap:8px;align-items:center;margin:12px 0}
+.avatar-search input{flex:1;min-width:0}
+.avatar-titles,.avatar-people{display:grid;grid-template-columns:repeat(auto-fill,minmax(105px,1fr));gap:10px;margin-top:12px;max-height:230px;overflow:auto}
+.avatar-choice{background:#211a2e;border:1px solid #49355f;border-radius:10px;padding:7px;color:white;min-width:0}
+.avatar-choice img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:8px;display:block;margin-bottom:6px}
+.avatar-choice span{display:block;font-size:11px;line-height:1.3;overflow-wrap:anywhere}
+.avatar-choice.selected{border:2px solid #a78bfa}
+.avatar-section-title{font-size:14px;color:#c4b5fd;margin:16px 0 6px}
+.avatar-help{font-size:12px;color:#bdb3ca!important}
 
+
+.account-link{margin-left:auto;flex:0 0 auto;width:42px;height:42px;border-radius:10px;background:#302641;border:1px solid #59456e;display:flex;align-items:center;justify-content:center;color:#fff;text-decoration:none;transition:background .2s,border-color .2s;}
+.account-link:hover{background:#49355f;border-color:#a78bfa;color:#fff;}
+.account-link svg{width:23px;height:23px;fill:currentColor;}
+.account-link-label{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;}
+@media(max-width:600px){.account-link{margin-left:auto;width:40px;height:40px;}}
 </style>
 </head>
 <link rel="manifest" href="/manifest.json">
@@ -366,7 +383,7 @@ footer{padding:28px 5%;color:#a49aaf;border-top:1px solid #302342}
   setTimeout(hideLoader, 6000);
 })();
 </script>
-<header><div class="logo">VYRO</div><nav><a href="#inicio">Inicio</a><a href="#catalogo">Catálogo</a><a href="/admin.html">Administrador</a><a href="#" id="accountLink">Mi cuenta</a></nav><input id="buscar" type="search" placeholder="Buscar películas, series o anime..." aria-label="Buscar catálogo"></header>
+<header><div class="logo">VYRO</div><nav><a href="#inicio">Inicio</a><a href="#catalogo">Catálogo</a><a href="/admin.html">Administrador</a></nav><input id="buscar" type="search" placeholder="Buscar películas, series o anime..." aria-label="Buscar catálogo"><a href="#" id="accountLink" class="account-link" aria-label="Mi cuenta" title="Mi cuenta"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 12a4.2 4.2 0 1 0 0-8.4A4.2 4.2 0 0 0 12 12Zm0 2c-4.3 0-7.8 2.2-7.8 4.9V21h15.6v-2.1c0-2.7-3.5-4.9-7.8-4.9Z"/></svg><span class="account-link-label">Mi cuenta</span></a></header>
 
 <section class="hero" id="inicio"><p>BIENVENIDO A VYRO</p><h1 id="tituloHero">VYRO</h1><p>Películas, series y anime en un solo lugar.</p><button onclick="document.getElementById('catalogo').scrollIntoView({behavior:'smooth'})">Explorar catálogo</button></section>
 
@@ -773,9 +790,10 @@ import {
   getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword,
   signOut, onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyAEFiwgtTqPxhnc8Mm4ER8YTLGqvOz00Nk",
+  apiKey: "AIzaSyAEFiwgtTQpxhnc8Mm4ER8YTLGqvOz00Nk",
   authDomain: "vyro-streaming.firebaseapp.com",
   projectId: "vyro-streaming",
   appId: "1:178700573094:web:a5285be9464d4bcd261767"
@@ -783,8 +801,8 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
+const db = getFirestore(app);
 const link = document.getElementById("accountLink");
-
 const modal = document.createElement("div");
 modal.className = "account-modal";
 modal.id = "accountModal";
@@ -808,9 +826,13 @@ modal.innerHTML = `
     <div id="accountProfile" hidden>
       <p>Has iniciado sesión en VYRO con:</p>
       <p class="account-email" id="accountUserEmail"></p>
-      <div class="account-actions">
-        <button id="accountLogout" type="button">Cerrar sesión</button>
-      </div>
+      <div class="avatar-current"><img id="currentAvatar" alt="Avatar del perfil"><div><strong id="avatarName">Elige tu personaje</strong><p class="avatar-help">Tu personaje aparecerá como foto de perfil.</p></div></div>
+      <h3 class="avatar-section-title">1. Busca una película, serie o anime</h3>
+      <div class="avatar-search"><input id="avatarTitleSearch" type="search" placeholder="Ej. Spider-Man, Naruto..."><button id="avatarSearchBtn" type="button">Buscar</button></div>
+      <div id="avatarTitles" class="avatar-titles"></div>
+      <h3 class="avatar-section-title">2. Elige un personaje</h3>
+      <div id="avatarPeople" class="avatar-people"></div>
+      <div class="account-actions"><button id="accountLogout" class="account-secondary" type="button">Cerrar sesión</button></div>
     </div>
     <p class="account-status" id="accountStatus" role="status" aria-live="polite"></p>
   </section>`;
@@ -818,30 +840,21 @@ document.body.append(modal);
 
 const $ = id => document.getElementById(id);
 let registerMode = false;
-
+let activeUser = null;
+let selectedTitle = null;
+let avatarSearchTimer;
 function showStatus(message) { $("accountStatus").textContent = message; }
-function openAccount(event) {
-  event?.preventDefault();
-  modal.classList.add("open");
-  showStatus("");
-}
+function openAccount(event) { event?.preventDefault(); modal.classList.add("open"); showStatus(""); }
 function closeAccount() { modal.classList.remove("open"); }
-
 link?.addEventListener("click", openAccount);
 $("accountClose").addEventListener("click", closeAccount);
-modal.addEventListener("click", event => {
-  if (event.target === modal) closeAccount();
-});
-document.addEventListener("keydown", event => {
-  if (event.key === "Escape") closeAccount();
-});
+modal.addEventListener("click", event => { if (event.target === modal) closeAccount(); });
+document.addEventListener("keydown", event => { if (event.key === "Escape") closeAccount(); });
 
 $("accountMode").addEventListener("click", () => {
   registerMode = !registerMode;
   $("accountTitle").textContent = registerMode ? "Crear cuenta" : "Mi cuenta";
-  $("accountIntro").textContent = registerMode
-    ? "Regístrate con tu correo electrónico y una contraseña."
-    : "Inicia sesión o crea tu cuenta para VYRO.";
+  $("accountIntro").textContent = registerMode ? "Regístrate con tu correo electrónico y una contraseña." : "Inicia sesión o crea tu cuenta para VYRO.";
   $("accountSubmit").textContent = registerMode ? "Registrarme" : "Iniciar sesión";
   $("accountMode").textContent = registerMode ? "Ya tengo una cuenta" : "Crear cuenta";
   $("accountPassword").autocomplete = registerMode ? "new-password" : "current-password";
@@ -857,7 +870,7 @@ $("accountForm").addEventListener("submit", async event => {
   try {
     if (registerMode) {
       await createUserWithEmailAndPassword(auth, email, password);
-      showStatus("¡Cuenta creada correctamente!");
+      showStatus("¡Cuenta creada! Ahora elige tu personaje.");
     } else {
       await signInWithEmailAndPassword(auth, email, password);
       showStatus("Sesión iniciada correctamente.");
@@ -871,29 +884,110 @@ $("accountForm").addEventListener("submit", async event => {
       "auth/network-request-failed": "No se pudo conectar. Revisa tu internet."
     };
     showStatus(messages[error.code] || "No se pudo completar la operación. Inténtalo de nuevo.");
-  } finally {
-    $("accountSubmit").disabled = false;
-  }
+  } finally { $("accountSubmit").disabled = false; }
 });
 
-$("accountLogout").addEventListener("click", async () => {
+async function cargarAvatarGuardado(user) {
   try {
-    await signOut(auth);
-    showStatus("Has cerrado sesión.");
-  } catch {
-    showStatus("No se pudo cerrar la sesión. Inténtalo de nuevo.");
+    const snap = await getDoc(doc(db, "perfiles", user.uid));
+    if (snap.exists() && snap.data().avatarUrl) {
+      const data = snap.data();
+      $("currentAvatar").src = data.avatarUrl;
+      $("avatarName").textContent = data.avatarNombre || "Personaje seleccionado";
+    } else {
+      $("currentAvatar").removeAttribute("src");
+      $("avatarName").textContent = "Elige tu personaje";
+    }
+  } catch (error) {
+    showStatus("Activa Firestore y configura sus reglas para guardar el avatar.");
   }
+}
+
+async function buscarTitulos() {
+  const query = $("avatarTitleSearch").value.trim();
+  if (query.length < 2) { showStatus("Escribe al menos 2 letras para buscar."); return; }
+  showStatus("Buscando títulos…");
+  $("avatarTitles").replaceChildren();
+  $("avatarPeople").replaceChildren();
+  try {
+    const response = await fetch(`/api/catalogo?${new URLSearchParams({ tipo: "Todos", pagina: "1", buscar: query })}`);
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error || "No se pudo buscar.");
+    const items = (data.results || []).filter(item => item.poster_path);
+    if (!items.length) { showStatus("No se encontraron títulos con póster."); return; }
+    items.slice(0, 18).forEach(item => {
+      const tipo = item.vyro_type === "tv" || item.vyro_type === "anime" ? "tv" : "movie";
+      const button = document.createElement("button");
+      button.type = "button"; button.className = "avatar-choice";
+      const img = document.createElement("img"); img.src = `https://image.tmdb.org/t/p/w185${item.poster_path}`; img.alt = "";
+      const label = document.createElement("span"); label.textContent = item.title || item.name || "Sin título";
+      button.append(img, label);
+      button.addEventListener("click", () => cargarPersonajes({ id: item.id, tipo, nombre: label.textContent }, button));
+      $("avatarTitles").append(button);
+    });
+    showStatus("Selecciona un título para ver sus personajes.");
+  } catch (error) { showStatus(error.message || "Error al buscar títulos."); }
+}
+
+async function cargarPersonajes(title, button) {
+  selectedTitle = title;
+  document.querySelectorAll("#avatarTitles .avatar-choice").forEach(el => el.classList.toggle("selected", el === button));
+  $("avatarPeople").replaceChildren();
+  showStatus(`Buscando personajes de ${title.nombre}…`);
+  try {
+    const response = await fetch(`/api/personajes?tipo=${title.tipo}&id=${encodeURIComponent(title.id)}`);
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error || "No se pudieron cargar los personajes.");
+    if (!data.results?.length) { showStatus("No hay imágenes de personajes disponibles para este título."); return; }
+    data.results.forEach(persona => {
+      const choice = document.createElement("button"); choice.type = "button"; choice.className = "avatar-choice";
+      const img = document.createElement("img"); img.src = persona.imagen; img.alt = persona.nombre;
+      const label = document.createElement("span"); label.textContent = persona.personaje ? `${persona.personaje} · ${persona.nombre}` : persona.nombre;
+      choice.append(img, label);
+      choice.addEventListener("click", () => guardarAvatar(persona));
+      $("avatarPeople").append(choice);
+    });
+    showStatus("Elige la imagen del personaje que quieras usar.");
+  } catch (error) { showStatus(error.message || "Error al cargar personajes."); }
+}
+
+async function guardarAvatar(persona) {
+  if (!activeUser) return;
+  showStatus("Guardando tu personaje…");
+  try {
+    await setDoc(doc(db, "perfiles", activeUser.uid), {
+      avatarUrl: persona.imagen,
+      avatarNombre: persona.personaje || persona.nombre,
+      personaje: persona.nombre,
+      titulo: selectedTitle?.nombre || "",
+      actualizado: new Date().toISOString()
+    }, { merge: true });
+    $("currentAvatar").src = persona.imagen;
+    $("avatarName").textContent = persona.personaje || persona.nombre;
+    showStatus("¡Foto de perfil actualizada!");
+  } catch (error) {
+    console.error(error);
+    showStatus("No se pudo guardar. Revisa que Firestore esté activado y sus reglas configuradas.");
+  }
+}
+
+$("avatarSearchBtn").addEventListener("click", buscarTitulos);
+$("avatarTitleSearch").addEventListener("keydown", event => { if (event.key === "Enter") { event.preventDefault(); buscarTitulos(); } });
+$("accountLogout").addEventListener("click", async () => {
+  try { await signOut(auth); showStatus("Has cerrado sesión."); }
+  catch { showStatus("No se pudo cerrar la sesión. Inténtalo de nuevo."); }
 });
 
-onAuthStateChanged(auth, user => {
+onAuthStateChanged(auth, async user => {
+  activeUser = user || null;
   const loggedIn = Boolean(user);
   $("accountFormArea").hidden = loggedIn;
   $("accountProfile").hidden = !loggedIn;
   $("accountUserEmail").textContent = user?.email || "";
   if (loggedIn) {
     $("accountTitle").textContent = "Mi cuenta";
-    $("accountIntro").textContent = "Tu sesión está activa.";
-    showStatus("");
+    $("accountIntro").textContent = "Tu sesión está activa. Elige tu personaje favorito como avatar.";
+    await cargarAvatarGuardado(user);
   } else {
     $("accountTitle").textContent = registerMode ? "Crear cuenta" : "Mi cuenta";
     $("accountIntro").textContent = "Inicia sesión o crea tu cuenta para VYRO.";
